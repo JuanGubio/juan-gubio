@@ -40,25 +40,3 @@ jobs:
         curl -f http://localhost:8080 || exit 1
         docker stop test-app
         docker rm test-app
-
-  deploy:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Log in to GitHub Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Build and push Docker image
-      run: |
-        docker build -t juan-gubio:1.0.1 .
-        docker tag juan-gubio:1.0.1 ghcr.io/juangubio/juan-gubio:1.0.1
-        docker push ghcr.io/juangubio/juan-gubio:1.0.1

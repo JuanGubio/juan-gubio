@@ -1,23 +1,25 @@
-.PHONY: build run db deploy clean
+APP_NAME=gubio
+STACK_FILE=stack.yml
 
-IMAGE_NAME=juan-gubio
-IMAGE_VERSION=1.0.1
+.PHONY: build deploy logs rm ps restart
 
 build:
-	docker build -t $(IMAGE_NAME):$(IMAGE_VERSION) .
-
-run:
-	docker run -p 8080:8080 $(IMAGE_NAME):$(IMAGE_VERSION)
-
-db:
-	docker-compose -f stack.yml up -d
-
-stop-db:
-	docker-compose -f stack.yml down
+	docker build -t $(APP_NAME):latest .
 
 deploy:
-	./deploy_all.sh
+	docker stack deploy --with-registry-auth -c $(STACK_FILE) $(APP_NAME)
 
-clean:
-	docker rmi $(IMAGE_NAME):$(IMAGE_VERSION) || true
-	docker-compose -f stack.yml down --volumes --remove-orphans || true
+logs:
+	docker service logs -f $(APP_NAME)_$(APP_NAME)
+
+rm:
+	docker stack rm $(APP_NAME)
+
+ps:
+	docker service ls
+
+restart:
+	make rm
+	sleep 5
+	make build
+	make deploy

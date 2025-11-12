@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  gubio:
+    image: gubio:latest
+    build: .
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.gubio.entrypoints=http"
+        - "traefik.http.routers.gubio.rule=Host(`gubio.byronrm.com`)"
+        - "traefik.http.middlewares.gubio-https-redirect.redirectscheme.scheme=https"
+        - "traefik.http.routers.gubio.middlewares=gubio-https-redirect"
+        - "traefik.http.routers.gubio-secure.entrypoints=https"
+        - "traefik.http.routers.gubio-secure.rule=Host(`gubio.byronrm.com`)"
+        - "traefik.http.routers.gubio-secure.tls=true"
+        - "traefik.http.routers.gubio-secure.tls.certresolver=http"
+        - "traefik.http.routers.gubio-secure.service=gubio"
+        - "traefik.http.services.gubio.loadbalancer.server.port=80"
+        - "traefik.docker.network=traefik-public"
+    networks:
+      - traefik-public
+
+networks:
+  traefik-public:
+    external: true

@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: ejemplo_db
+      TZ: "America/Guayaquil"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - db_net
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: bmoreno@yavirac.edu.ec
+      PGADMIN_DEFAULT_PASSWORD: admin1234
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    volumes:
+      - pg_admin4:/var/lib/pgadmin
+    networks:
+      - db_net
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+volumes:
+  pg_data:
+  pg_admin4:
+
+networks:
+  db_net:

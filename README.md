@@ -10,7 +10,7 @@ docker run -p 8080:8080 juangubio:1.0.1
 ```
 
 ## Imagen pública
-Docker Hub: juangubio/juan-gubio:1.0.1
+Docker Hub: juanpi38818/juan-gubio:1.0.1
 
 ## Despliegue
 Ejemplo de despliegue en Render o Google Cloud Run.

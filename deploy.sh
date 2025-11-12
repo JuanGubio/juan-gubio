@@ -28,7 +28,13 @@ docker login -u $USER
 echo "⬆️  Subiendo imagen a Docker Hub..."
 docker push $USER/$IMAGE_NAME:$TAG
 
-# 6️⃣ Mostrar mensaje final con enlace directo
+# 6️⃣ Subir cambios a GitHub
+echo "📤 Subiendo cambios a GitHub..."
+git add .
+git commit -m "Deploy version $TAG"
+git push origin juan-gubio
+
+# 7️⃣ Mostrar mensaje final con enlace directo
 echo "✅ Imagen subida correctamente."
 echo "🌍 Verifica aquí: https://hub.docker.com/r/$USER/$IMAGE_NAME"
 echo "📦 Nombre de la imagen para Render: $USER/$IMAGE_NAME:$TAG"

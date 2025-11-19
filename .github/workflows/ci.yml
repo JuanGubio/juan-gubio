@@ -48,15 +48,53 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Log in to Docker Hub
+    - name: Log in to GHCR
       uses: docker/login-action@v3
       with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build and push Docker image
       run: |
-        docker build -t juan-gubio:1.0.1 .
-        docker tag juan-gubio:1.0.1 juangubio/juan-gubio:1.0.1
-        docker push juangubio/juan-gubio:1.0.1
-        docker rm test-app
+        docker build -t ghcr.io/byronmoreno/pepito:1.0.1 .
+        docker push ghcr.io/byronmoreno/pepito:1.0.1
+
+    - name: Copiar stack.yml al VPS (SCP)
+      uses: appleboy/scp-action@v1
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USER }}
+        password: ${{ secrets.VPS_PASSWORD }}
+        port: ${{ secrets.VPS_SSH_PORT }}
+        source: "stack.yml"
+        target: "/home/${{ secrets.VPS_USER }}/deploy"
+
+    - name: 🚀 Deploy con eliminación del stack
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USER }}
+        password: ${{ secrets.VPS_PASSWORD }}
+        port: ${{ secrets.VPS_SSH_PORT }}
+        script: |
+          cd ~/deploy
+
+          # Login a GitHub Container Registry
+          echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u byronmoreno --password-stdin
+
+          # Descargar la nueva imagen
+          docker pull ghcr.io/byronmoreno/pepito:1.0.1
+
+          # Borrar el stack SIEMPRE (si no existe no falla)
+          docker stack rm pepito || true
+
+          # Pequeña espera mientras Swarm libera recursos
+          sleep 10
+
+          # Crear el nuevo stack limpio
+          docker stack deploy --with-registry-auth -c stack.yml pepito
+
+          # Estado final del despliegue
+          docker service ls
+          docker stack ps pepito

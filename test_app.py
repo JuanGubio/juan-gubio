@@ -16,7 +16,7 @@ def test_home(client):
 def test_ai_no_message(client):
     response = client.post('/ai', json={})
     assert response.status_code == 400
-    assert b'No message provided' in response.get_json()['error']
+    assert "No message provided" in response.get_json()['error']
 
 def test_ai_with_message(client, monkeypatch):
     # Mock openai to avoid needing API key

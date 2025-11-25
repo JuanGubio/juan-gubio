@@ -2,7 +2,7 @@
 
 USER="juanpi38818"
 IMAGE_NAME="juan-gubio"
-TAG="1.0.1"
+TAG="1.0.5"
 
 echo "Construyendo imagen Docker..."
 docker build -t $IMAGE_NAME:$TAG .

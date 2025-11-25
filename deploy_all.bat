@@ -5,7 +5,7 @@ REM Versión: 1.0.1
 
 REM --- CONFIGURACIÓN ---
 set IMAGE_NAME=juan-gubio
-set IMAGE_VERSION=1.0.1
+set IMAGE_VERSION=1.0.5
 set DOCKERHUB_USER=juangubio
 set GITHUB_USER=juangubio
 set REPO_NAME=juan-gubio

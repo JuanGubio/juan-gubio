@@ -5,7 +5,7 @@
 
 # --- CONFIGURACIÓN ---
 IMAGE_NAME="juan-gubio"
-IMAGE_VERSION="1.0.1"
+IMAGE_VERSION="1.0.5"
 DOCKERHUB_USER="juangubio"
 GITHUB_USER="juangubio"
 REPO_NAME="juan-gubio"

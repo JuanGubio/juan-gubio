@@ -38,11 +38,11 @@ jobs:
         flake8 app.py --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
     - name: Build Docker image
-      run: docker build -t ghcr.io/JuanGubio/juan-gubio:1.0.5 .
+      run: docker build -t ghcr.io/jimmy0016/espinoza:1.0.5 .
 
     - name: Test Docker image
       run: |
-        docker run -d --name test-app -p 8080:8080 ghcr.io/JuanGubio/juan-gubio:1.0.5
+        docker run -d --name test-app -p 8080:8080 ghcr.io/jimmy0016/espinoza:1.0.5
         sleep 10
         curl -f http://localhost:8080 || exit 1
         docker stop test-app
@@ -51,11 +51,11 @@ jobs:
       uses: docker/login-action@v3
       with:
         registry: ghcr.io
-        username: JuanGubio
+        username: jimmy0016
         password: ${{ secrets.GHCR_PAT }}
 
     - name: Push Docker image to GHCR
-      run: docker push ghcr.io/JuanGubio/juan-gubio:1.0.5
+      run: docker push ghcr.io/jimmy0016/espinoza:1.0.5
   deploy:
     needs: build-and-test
     runs-on: ubuntu-latest
@@ -93,10 +93,10 @@ jobs:
           cd ~/deploy
 
           # Login a GitHub Container Registry
-          echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u JuanGubio --password-stdin
+          echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u jimmy0016 --password-stdin
 
           # Descargar la nueva imagen
-          docker pull ghcr.io/JuanGubio/juan-gubio:1.0.5
+          docker pull ghcr.io/jimmy0016/espinoza:1.0.5
 
           # Borrar el stack SIEMPRE (si no existe no falla)
           docker stack rm gubio || true

@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   gubio:
-    image: ghcr.io/jimmy0016/espinoza:1.0.5
+    image: ghcr.io/JuanGubio/gubio:1.0.5
     build: .
     deploy:
       replicas: 1

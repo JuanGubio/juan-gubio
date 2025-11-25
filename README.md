@@ -10,7 +10,7 @@ docker run -p 8080:8080 gubio:1.0.5
 ```
 
 ## Imagen pública
-- GitHub Packages: ghcr.io/jimmy0016/espinoza:1.0.5
+- GitHub Packages: ghcr.io/JuanGubio/gubio:1.0.5
 - Docker Hub: juanpi38818/gubio:1.0.5
 
 ## Despliegue

@@ -17,7 +17,7 @@ services:
         - "traefik.http.routers.gubio-secure.tls=true"
         - "traefik.http.routers.gubio-secure.tls.certresolver=http"
         - "traefik.http.routers.gubio-secure.service=gubio"
-        - "traefik.http.services.gubio.loadbalancer.server.port=80"
+        - "traefik.http.services.gubio.loadbalancer.server.port=3000"
         - "traefik.docker.network=traefik-public"
     networks:
       - traefik-public

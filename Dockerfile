@@ -9,17 +9,17 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Copia archivos de dependencias primero (para aprovechar caché de Docker)
+# Copia archivos de dependencias primero para cache
 COPY requirements.txt .
 
 # Instala dependencias de Python
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia el resto del código fuente
+# Copia tu proyecto completo
 COPY . .
 
-# Expone el puerto (usa el mismo que en tu app)
-EXPOSE 3000
+# Tu aplicación corre en 8080 (gunicorn)
+EXPOSE 8080
 
-# Comando de inicio
-CMD ["python", "app/main.py"]
+# Ejecutar main.py directamente
+CMD ["python", "main.py"]

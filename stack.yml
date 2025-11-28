@@ -22,7 +22,7 @@ services:
         - "traefik.http.routers.gubio-secure.service=gubio"
 
         # --- Puerto interno del contenedor ---
-        - "traefik.http.services.gubio.loadbalancer.server.port=1001"
+        - "traefik.http.services.gubio.loadbalancer.server.port=8080"
 
         # --- Red de Traefik ---
         - "traefik.docker.network=traefik-public"

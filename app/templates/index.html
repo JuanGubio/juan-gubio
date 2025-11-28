@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen - Aplicación CI/CD con Flask y AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            max-width: 600px;
+            width: 90%;
+        }
+
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 10px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        textarea::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            background: #5a6fd8;
+        }
+
+        .result {
+            margin-top: 2rem;
+            padding: 1rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            display: none;
+        }
+
+        .sentiment-positive {
+            border-left: 5px solid #4CAF50;
+        }
+
+        .sentiment-negative {
+            border-left: 5px solid #F44336;
+        }
+
+        .sentiment-neutral {
+            border-left: 5px solid #FFC107;
+        }
+
+        .tech-stack {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .tech-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            transition: transform 0.3s ease;
+        }
+
+        .tech-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🧠</div>
+        <h1>Jean - Aplicación CI/CD</h1>
+        <p>Aplicación para análisis de sentimientos usando Python y Flask</p>
+
+        <div class="input-group">
+            <textarea id="textInput" placeholder="Ingresa tu texto aquí para analizar sentimientos..."></textarea>
+            <button onclick="analyzeSentiment()">Analizar Sentimiento</button>
+        </div>
+
+        <div id="result" class="result">
+            <h3>Resultado:</h3>
+            <p id="resultText"></p>
+            <p>Sentimiento: <strong id="sentimentLabel"></strong></p>
+            <p>Confianza: <strong id="confidenceValue"></strong></p>
+        </div>
+
+        <div class="tech-stack">
+            <span class="tech-item">Python</span>
+            <span class="tech-item">Flask</span>
+            <span class="tech-item">Transformers</span>
+            <span class="tech-item">Docker</span>
+            <span class="tech-item">GitHub Actions</span>
+            <span class="tech-item">Docker Swarm</span>
+        </div>
+
+        <div class="footer">
+            <p>Examen desarrollado con tecnologías modernas de CI/CD</p>
+        </div>
+    </div>
+
+    <script>
+        async function analyzeSentiment() {
+            const textInput = document.getElementById('textInput');
+            const text = textInput.value.trim();
+            
+            if (!text) {
+                alert('Por favor ingresa un texto para analizar');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: text })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('resultText').textContent = result.text;
+                    document.getElementById('sentimentLabel').textContent = result.sentiment;
+                    document.getElementById('confidenceValue').textContent = (result.confidence * 100).toFixed(2) + '%';
+                    
+                    // Apply sentiment-specific styling
+                    const resultDiv = document.getElementById('result');
+                    resultDiv.className = 'result sentiment-' + result.sentiment.toLowerCase();
+                    resultDiv.style.display = 'block';
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error al conectar con el servidor: ' + error.message);
+            }
+        }
+        
+        // Allow Enter key to submit (but Ctrl+Enter for new line)
+        document.getElementById('textInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.ctrlKey) {
+                e.preventDefault();
+                analyzeSentiment();
+            }
+        });
+    </script>
+</body>
+</html>

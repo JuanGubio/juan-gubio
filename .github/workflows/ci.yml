@@ -1,0 +1,125 @@
+name: CI/CD to VPS with Docker Swarm
+
+on:
+  push:
+    branches:
+      - Juan Gubio
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-test-publish-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      VPS_HOST: ${{ secrets.VPS_HOST }}
+      VPS_USER: ${{ secrets.VPS_USER }}
+      VPS_PASSWORD: ${{ secrets.VPS_PASSWORD }}
+      VPS_SSH_PORT: ${{ secrets.VPS_SSH_PORT }}
+
+    steps:
+      # 1️⃣ Checkout del código
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2️⃣ Configurar Python
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+
+      # 3️⃣ Instalar dependencias
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
+
+      # 4️⃣ Ejecutar tests
+      - name: Run tests
+        run: python -m pytest tests/
+
+      # 5️⃣ Build de la app (si aplica)
+      - name: Build app
+        run: echo "No build step needed for Python Flask app"
+
+      # 6️⃣ Login en GitHub Container Registry
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      # 7️⃣ Construir imagen Docker
+      - name: Docker Build
+        run: |
+          docker build -t gubio:1.0.5 .
+
+      # 8️⃣ Tag y Push al GHCR
+      - name: Tag & Push Image to GHCR
+        run: |
+          IMAGE="ghcr.io/juangubio/gubio"
+          docker tag gubio:1.0.5 $IMAGE:1.0.5
+          docker tag gubio:1.0.5 $IMAGE:latest
+
+          docker push $IMAGE:1.0.5
+          docker push $IMAGE:latest
+
+      # 9️⃣ Copiar stack.yml al VPS
+      - name: Copiar stack.yml al VPS (SCP)
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ env.VPS_HOST }}
+          username: ${{ env.VPS_USER }}
+          password: ${{ env.VPS_PASSWORD }}
+          port: ${{ env.VPS_SSH_PORT }}
+          source: "stack.yml"
+          target: "/home/${{ env.VPS_USER }}/deploy"
+
+      # 9.1️⃣ Verificar que stack.yml se copió correctamente
+      - name: Verificar copia de stack.yml en VPS
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ env.VPS_HOST }}
+          username: ${{ env.VPS_USER }}
+          password: ${{ env.VPS_PASSWORD }}
+          port: ${{ env.VPS_SSH_PORT }}
+          script: |
+            if [ -f ~/deploy/stack.yml ]; then
+              echo "✅ stack.yml copiado correctamente"
+            else
+              echo "❌ Error: stack.yml no encontrado en ~/deploy/"
+              exit 1
+            fi
+
+      # 🔟 Deploy en el VPS via SSH
+      - name: Deploy on VPS via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ env.VPS_HOST }}
+          username: ${{ env.VPS_USER }}
+          password: ${{ env.VPS_PASSWORD }}
+          port: ${{ env.VPS_SSH_PORT }}
+          script: |
+            echo "🚀 Iniciando despliegue en VPS"
+
+            cd ~/deploy
+
+            # Login al GHCR desde el VPS
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            # Descargar la última imagen
+            docker pull ghcr.io/juangubio/gubio:latest
+
+            # Eliminar stack anterior (si existe)
+            docker stack rm gubio || true
+
+            # Esperar que el stack se libere
+            sleep 10
+
+            # Desplegar el nuevo stack limpio
+            docker stack deploy --with-registry-auth -c stack.yml gubio
+
+            # Mostrar estado final
+            docker service ls
+            docker stack ps gubio

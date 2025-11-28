@@ -1,0 +1,13 @@
+{
+  "name": "gubio",
+  "version": "1.0.5",
+  "description": "Proyecto Python Flask con CI/CD",
+  "main": "app/main.py",
+  "scripts": {
+    "build": "echo '🚀 Build ejecutado correctamente'",
+    "start": "python app/main.py",
+    "test": "python -m pytest tests/"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

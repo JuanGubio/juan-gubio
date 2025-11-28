@@ -24,7 +24,6 @@ def home():
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
-    """API endpoint to analyze sentiment"""
     data = request.get_json()
     text = data.get('text', '')
     
@@ -41,6 +40,5 @@ def analyze():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# Only run the server if this file is executed directly
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=3000, debug=True)
+    app.run(host='0.0.0.0', port=8080)

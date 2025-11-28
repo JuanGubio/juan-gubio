@@ -18,7 +18,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copia tu proyecto completo
 COPY . .
 
-# Tu aplicación corre en 8080 (gunicorn)
+# Tu aplicación corre en 8080
 EXPOSE 8080
 
 # Ejecutar main.py directamente

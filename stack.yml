@@ -21,10 +21,10 @@ services:
         - "traefik.http.routers.gubio-secure.tls.certresolver=myresolver"
         - "traefik.http.routers.gubio-secure.service=gubio"
 
-        # --- Puerto interno del contenedor ---
+        # --- Puerto interno donde escucha Flask ---
         - "traefik.http.services.gubio.loadbalancer.server.port=8080"
 
-        # --- Red de Traefik ---
+        # --- Red: Traefik ---
         - "traefik.docker.network=traefik-public"
 
     networks:

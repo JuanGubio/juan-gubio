@@ -64,8 +64,8 @@ jobs:
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          password: ${{ secrets.VPS_PASSWORD }}
+          username: ${{ secrets.USUARIO_VPS }}
+          password: ${{ secrets.VPS_CONTRASENA }}
           port: ${{ secrets.VPS_SSH_PORT }}
           script: |
             echo "SSH OK"
@@ -78,19 +78,19 @@ jobs:
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          password: ${{ secrets.VPS_PASSWORD }}
+          username: ${{ secrets.USUARIO_VPS }}
+          password: ${{ secrets.VPS_CONTRASENA }}
           port: ${{ secrets.VPS_SSH_PORT }}
           source: "stack.yml"
-          target: "/home/${{ secrets.VPS_USER }}/gubio"
+          target: "/home/${{ secrets.USUARIO_VPS }}/gubio"
 
       # 10. Desplegar stack en Swarm
       - name: Deploy stack
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          password: ${{ secrets.VPS_PASSWORD }}
+          username: ${{ secrets.USUARIO_VPS }}
+          password: ${{ secrets.VPS_CONTRASENA }}
           port: ${{ secrets.VPS_SSH_PORT }}
           script: |
             echo "Desplegando stack..."

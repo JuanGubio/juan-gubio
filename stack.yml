@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  nala:
+  gubio:
     # ⚠ Cambia <OWNER> por el usuario de GitHub de la chica, igual que en la imagen del pipeline
     image: ghcr.io/gubiogubio/nala-app:1.0.5
     deploy:
@@ -10,12 +10,12 @@ services:
         - "traefik.enable=true"
 
         # HTTP
-        - "traefik.http.routers.nala.entrypoints=http"
-        - "traefik.http.routers.nala.rule=Host(`gubio.byronrm.com`)"
+        - "traefik.http.routers.gubio.entrypoints=http"
+        - "traefik.http.routers.gubio.rule=Host(`gubio.byronrm.com`)"
 
         # Redirección a HTTPS
-        - "traefik.http.middlewares.nala-https-redirect.redirectscheme.scheme=https"
-        - "traefik.http.routers.nala.middlewares=nala-https-redirect"
+        - "traefik.http.middlewares.gubio-https-redirect.redirectscheme.scheme=https"
+        - "traefik.http.routers.gubio.middlewares=gubio-https-redirect"
 
         # HTTPS
         - "traefik.http.routers.gubiotags.entrypoints=https"
@@ -24,7 +24,7 @@ services:
         - "traefik.http.routers.gubiotags.tls.certresolver=http"
 
         # Puerto interno de Flask
-        - "traefik.http.services.nala.loadbalancer.server.port=2407"
+        - "traefik.http.services.gubio.loadbalancer.server.port=2407"
         - "traefik.docker.network=traefik-public"
 
     networks:

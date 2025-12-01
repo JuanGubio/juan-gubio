@@ -1,16 +1,16 @@
-name: irina application
+name: gubio application
 
 on:
   push:
     branches:
-      - nala
+      - jp
 
 permissions:
   contents: read
   packages: write
 
 env:
-  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/irina-app
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/nala-app
   IMAGE_TAG: 1.0.5
 
 jobs:
@@ -44,7 +44,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/lizirina/irina-app:1.0.5
+          tags: ghcr.io/gubiogubio/nala-app:1.0.5
 
       # 6. Debug de secrets (solo para verificar)
       - name: Debug secrets
@@ -73,7 +73,7 @@ jobs:
             whoami
             uptime
 
-      # 9. Copiar stack.yml al servidor (carpeta irina)
+      # 9. Copiar stack.yml al servidor (carpeta gubio)
       - name: Copy stack.yml to VPS
         uses: appleboy/scp-action@v1
         with:
@@ -82,7 +82,7 @@ jobs:
           password: ${{ secrets.VPS_PASSWORD }}
           port: ${{ secrets.VPS_SSH_PORT }}
           source: "stack.yml"
-          target: "/home/${{ secrets.VPS_USER }}/irina"
+          target: "/home/${{ secrets.VPS_USER }}/gubio"
 
       # 10. Desplegar stack en Swarm
       - name: Deploy stack
@@ -94,20 +94,20 @@ jobs:
           port: ${{ secrets.VPS_SSH_PORT }}
           script: |
             echo "Desplegando stack..."
-            cd ~/irina
+            cd ~/gubio
 
             echo "PULL DE LA IMAGEN"
             docker login ghcr.io -u ${{ github.repository_owner }} -p ${{ secrets.GHCR_PAT }}
             docker pull ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
 
             echo "BAJANDO SERVICIO ANTERIOR"
-            docker stack rm irina || true
+            docker stack rm gubio || true
 
             echo "ESPERANDO 20s..."
             sleep 20
 
             echo "DESPLEGANDO NUEVO STACK"
-            docker stack deploy --with-registry-auth -c stack.yml irina
+            docker stack deploy --with-registry-auth -c stack.yml gubio
 
             echo "SERVICIOS ACTIVOS:"
             docker service ls

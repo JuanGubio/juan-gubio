@@ -31,13 +31,13 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # 4. Login a GHCR con el token de ELLA
+      # 4. Login a GHCR con GITHUB_TOKEN
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: gubiogubio
-          password: ${{ secrets.GHCR_PAT }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
@@ -97,7 +97,7 @@ jobs:
             cd ~/gubio
 
             echo "PULL DE LA IMAGEN"
-            docker login ghcr.io -u gubiogubio -p ${{ secrets.GHCR_PAT }}
+            docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
             docker pull ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
 
             echo "BAJANDO SERVICIO ANTERIOR"
